@@ -1,0 +1,294 @@
+/* LEDgenerateTables.c */
+/* author: Victor LOMNE - victor.lomne@gmail.com */
+
+
+
+#include <stdio.h>
+
+/* LED Sbox */
+unsigned char sbox[16] = {0x0C, 0x05, 0x06, 0x0B, 0x09, 0x00, 0x0A, 0X0D, 0x03, 0x0E, 0x0F, 0x08, 0x04, 0x07, 0x01, 0x02};
+
+/* LED xtime (tabulated multiplication by x in the finite field x^4 + x + 1) */
+unsigned char xtime[16] = {0x00, 0x02, 0x04, 0x06, 0x08, 0x0A, 0x0C, 0x0E, 0x03, 0x01, 0x07, 0x05, 0x0B, 0x09, 0x0F, 0x0D};
+
+/* Round constants */
+unsigned char RC[48] = {0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3E, 0x3D, 0x3B, 0x37, 0x2F, 0x1E, 0x3C, 0x39, 0x33, 0x27, 0x0E, 0x1D, 0x3A, 0x35, 0x2B, 0x16, 0x2C, 0x18, 0x30, 0x21, 0x02, 0x05, 0x0B, 0x17, 0x2E, 0x1C, 0x38, 0x31, 0x23, 0x06, 0x0D, 0x1B, 0x36, 0x2D, 0x1A, 0x34, 0x29, 0x12, 0x24, 0x08, 0x11, 0x22, 0x04};
+
+
+
+/****************************************************************************************************/
+void main(void)
+{
+	unsigned int i;
+	unsigned char il, ih;
+	unsigned long long T0_LED[256], T1_LED[256], T2_LED[256], T3_LED[256], T4_LED[256], T5_LED[256], T6_LED[256], T7_LED[256], Tcon64_LED[32], Tcon128_LED[48];
+	FILE * ptr;
+
+	/* loop over the possible input values to compute for T0, T1, T2, T3, T4, T5, T6 and T7 */
+	/* T0, T1, T2, T3, T4, T5, T6 and T7 allow to compute MixColumnsSerial(ShiftRows(SubCells(i))) */
+	for(i = 0; i < 256; i++)
+	{
+		/* compute low and high parts of i */
+		ih = i & 0x0f;
+		il = (i & 0xf0) >> 4;
+
+		/* compute T0 */
+		T0_LED[i]  = ((unsigned long long)( xtime[xtime[sbox[il]]]                                     )) << 4;
+		T0_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[ih]]]                                     )) << 0;
+		T0_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]]                              )) << 20;
+		T0_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]]                              )) << 16;
+		T0_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]] ^ xtime[sbox[il]] ^ sbox[il] )) << 36;
+		T0_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]] ^ xtime[sbox[ih]] ^ sbox[ih] )) << 32;
+		T0_LED[i] |= ((unsigned long long)( xtime[sbox[il]]                                            )) << 52;
+		T0_LED[i] |= ((unsigned long long)( xtime[sbox[ih]]                                            )) << 48;
+
+		/* compute T1 */
+		T1_LED[i]  = ((unsigned long long)( xtime[xtime[sbox[il]]]                                     )) << 12;
+		T1_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[ih]]]                                     )) << 8;
+		T1_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]]                              )) << 28;
+		T1_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]]                              )) << 24;
+		T1_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]] ^ xtime[sbox[il]] ^ sbox[il] )) << 44;
+		T1_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]] ^ xtime[sbox[ih]] ^ sbox[ih] )) << 40;
+		T1_LED[i] |= ((unsigned long long)( xtime[sbox[il]]                                            )) << 60;
+		T1_LED[i] |= ((unsigned long long)( xtime[sbox[ih]]                                            )) << 56;
+
+		/* compute T2 */
+		T2_LED[i]  = ((unsigned long long)( sbox[ih]                                                                 )) << 4;
+		T2_LED[i] |= ((unsigned long long)( sbox[il]                                                                 )) << 8;
+		T2_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[ih]]] ^ xtime[sbox[ih]]                                 )) << 20;
+		T2_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[il]]] ^ xtime[sbox[il]]                                 )) << 24;
+		T2_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]] ^ xtime[xtime[sbox[ih]]] ^ xtime[sbox[ih]] )) << 36;
+		T2_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]] ^ xtime[xtime[sbox[il]]] ^ xtime[sbox[il]] )) << 40;
+		T2_LED[i] |= ((unsigned long long)( xtime[sbox[ih]]                                                          )) << 52;
+		T2_LED[i] |= ((unsigned long long)( xtime[sbox[il]]                                                          )) << 56;
+
+		/* compute T3 */
+		T3_LED[i]  = ((unsigned long long)( sbox[il]                                                                 )) << 0;
+		T3_LED[i] |= ((unsigned long long)( sbox[ih]                                                                 )) << 12;
+		T3_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[il]]] ^ xtime[sbox[il]]                                 )) << 16;
+		T3_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[ih]]] ^ xtime[sbox[ih]]                                 )) << 28;
+		T3_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]] ^ xtime[xtime[sbox[il]]] ^ xtime[sbox[il]] )) << 32;
+		T3_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]] ^ xtime[xtime[sbox[ih]]] ^ xtime[sbox[ih]] )) << 44;
+		T3_LED[i] |= ((unsigned long long)( xtime[sbox[il]]                                                          )) << 48;
+		T3_LED[i] |= ((unsigned long long)( xtime[sbox[ih]]                                                          )) << 60;
+
+		/* compute T4 */
+		T4_LED[i]  = ((unsigned long long)( xtime[sbox[il]]                                                                     )) << 12;
+		T4_LED[i] |= ((unsigned long long)( xtime[sbox[ih]]                                                                     )) << 8;
+		T4_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[il]]] ^ sbox[il]                                                   )) << 28;
+		T4_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[ih]]] ^ sbox[ih]                                                   )) << 24;
+		T4_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]] ^ xtime[sbox[il]]                                     )) << 44;
+		T4_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]] ^ xtime[sbox[ih]]                                     )) << 40;
+		T4_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]] ^ xtime[xtime[sbox[il]]] ^ xtime[sbox[il]] ^ sbox[il] )) << 60;
+		T4_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]] ^ xtime[xtime[sbox[ih]]] ^ xtime[sbox[ih]] ^ sbox[ih] )) << 56;
+
+		/* compute T5 */
+		T5_LED[i]  = ((unsigned long long)( xtime[sbox[il]]                                                                     )) << 4;
+		T5_LED[i] |= ((unsigned long long)( xtime[sbox[ih]]                                                                     )) << 0;
+		T5_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[il]]] ^ sbox[il]                                                   )) << 20;
+		T5_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[ih]]] ^ sbox[ih]                                                   )) << 16;
+		T5_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]] ^ xtime[sbox[il]]                                     )) << 36;
+		T5_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]] ^ xtime[sbox[ih]]                                     )) << 32;
+		T5_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]] ^ xtime[xtime[sbox[il]]] ^ xtime[sbox[il]] ^ sbox[il] )) << 52;
+		T5_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]] ^ xtime[xtime[sbox[ih]]] ^ xtime[sbox[ih]] ^ sbox[ih] )) << 48;
+
+		/* compute T6 */
+		T6_LED[i]  = ((unsigned long long)( xtime[sbox[il]]                                            )) << 0;
+		T6_LED[i] |= ((unsigned long long)( xtime[sbox[ih]]                                            )) << 12;
+		T6_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[il]]] ^ xtime[sbox[il]]                   )) << 16;
+		T6_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[ih]]] ^ xtime[sbox[ih]]                   )) << 28;
+		T6_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]] ^ sbox[il]                   )) << 32;
+		T6_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]] ^ sbox[ih]                   )) << 44;
+		T6_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]] ^ xtime[sbox[il]] ^ sbox[il] )) << 48;
+		T6_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]] ^ xtime[sbox[ih]] ^ sbox[ih] )) << 60;
+
+		/* compute T7 */
+		T7_LED[i]  = ((unsigned long long)( xtime[sbox[ih]]                                            )) << 4;
+		T7_LED[i] |= ((unsigned long long)( xtime[sbox[il]]                                            )) << 8;
+		T7_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[ih]]] ^ xtime[sbox[ih]]                   )) << 20;
+		T7_LED[i] |= ((unsigned long long)( xtime[xtime[sbox[il]]] ^ xtime[sbox[il]]                   )) << 24;
+		T7_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]] ^ sbox[ih]                   )) << 36;
+		T7_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]] ^ sbox[il]                   )) << 40;
+		T7_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[ih]]]] ^ xtime[sbox[ih]] ^ sbox[ih] )) << 52;
+		T7_LED[i] |= ((unsigned long long)( xtime[xtime[xtime[sbox[il]]]] ^ xtime[sbox[il]] ^ sbox[il] )) << 56;
+	}
+
+	/* compute Tcon64_LED */
+	for(i = 0; i < 32; i++)
+	{
+		/* nibble 0 of row 0 */
+		Tcon64_LED[i]  = ((unsigned long long)(  0 ^ ((64 & 0xF0) >> 4) )) << 4;
+
+		/* nibble 0 of row 1 */
+		Tcon64_LED[i] |= ((unsigned long long)(  1 ^ ((64 & 0xF0) >> 4) )) << 20;
+
+		/* nibble 0 of row 2 */
+		Tcon64_LED[i] |= ((unsigned long long)(  2 ^  (64 & 0x0F)       )) << 36;
+
+		/* nibble 0 of row 3 */
+		Tcon64_LED[i] |= ((unsigned long long)(  3 ^ (64 & 0x0F)        )) << 52;
+
+		/* nibble 1 of row 0 */
+		Tcon64_LED[i] |= ((unsigned long long)( (RC[i] & 0x38)          >> 3)) << 0;
+
+		/* nibble 1 of row 1 */
+		Tcon64_LED[i] |= ((unsigned long long)( (RC[i] & 0x07)              )) << 16;
+
+		/* nibble 1 of row 2 */
+		Tcon64_LED[i] |= ((unsigned long long)( (RC[i] & 0x38)          >> 3)) << 32;
+
+		/* nibble 1 of row 3 */
+		Tcon64_LED[i] |= ((unsigned long long)( (RC[i] & 0x07)              )) << 48;
+	}
+
+	/* compute Tcon128_LED */
+	for(i = 0; i < 48; i++)
+	{
+		/* nibble 0 of row 0 */
+		Tcon128_LED[i]  = ((unsigned long long)(  0 ^ ((128 & 0xF0) >> 4) )) << 4;
+
+		/* nibble 0 of row 1 */
+		Tcon128_LED[i] |= ((unsigned long long)(  1 ^ ((128 & 0xF0) >> 4) )) << 20;
+
+		/* nibble 0 of row 2 */
+		Tcon128_LED[i] |= ((unsigned long long)(  2 ^  (128 & 0x0F)       )) << 36;
+
+		/* nibble 0 of row 3 */
+		Tcon128_LED[i] |= ((unsigned long long)(  3 ^ (128 & 0x0F)        )) << 52;
+
+		/* nibble 1 of row 0 */
+		Tcon128_LED[i] |= ((unsigned long long)( (RC[i] & 0x38)          >> 3)) << 0;
+
+		/* nibble 1 of row 1 */
+		Tcon128_LED[i] |= ((unsigned long long)( (RC[i] & 0x07)              )) << 16;
+
+		/* nibble 1 of row 2 */
+		Tcon128_LED[i] |= ((unsigned long long)( (RC[i] & 0x38)          >> 3)) << 32;
+
+		/* nibble 1 of row 3 */
+		Tcon128_LED[i] |= ((unsigned long long)( (RC[i] & 0x07)              )) << 48;
+	}
+
+	/* open a pointer and create the file LEDtables.h */
+	ptr = fopen("../LED/LED_tables.h", "w");
+	if(ptr == NULL)
+	{
+		printf("Unable to create file LED_tables.h\n");
+		return;
+	}
+
+	/* write T0 */
+	fprintf(ptr, "unsigned long long T0_LED[256] = {");
+	for(i = 0; i < 256; i++)
+	{
+		fprintf(ptr, "0x%016llx", T0_LED[i]);
+		if(i == 255)
+			fprintf(ptr, "};\n\n");
+		else
+			fprintf(ptr, ", ");
+	}
+
+	/* write T1 */
+	fprintf(ptr, "unsigned long long T1_LED[256] = {");
+	for(i = 0; i < 256; i++)
+	{
+		fprintf(ptr, "0x%016llx", T1_LED[i]);
+		if(i == 255)
+			fprintf(ptr, "};\n\n");
+		else
+			fprintf(ptr, ", ");
+	}
+
+	/* write T2 */
+	fprintf(ptr, "unsigned long long T2_LED[256] = {");
+	for(i = 0; i < 256; i++)
+	{
+		fprintf(ptr, "0x%016llx", T2_LED[i]);
+		if(i == 255)
+			fprintf(ptr, "};\n\n");
+		else
+			fprintf(ptr, ", ");
+	}
+
+	/* write T3 */
+	fprintf(ptr, "unsigned long long T3_LED[256] = {");
+	for(i = 0; i < 256; i++)
+	{
+		fprintf(ptr, "0x%016llx", T3_LED[i]);
+		if(i == 255)
+			fprintf(ptr, "};\n\n");
+		else
+			fprintf(ptr, ", ");
+	}
+
+	/* write T4 */
+	fprintf(ptr, "unsigned long long T4_LED[256] = {");
+	for(i = 0; i < 256; i++)
+	{
+		fprintf(ptr, "0x%016llx", T4_LED[i]);
+		if(i == 255)
+			fprintf(ptr, "};\n\n");
+		else
+			fprintf(ptr, ", ");
+	}
+
+	/* write T5 */
+	fprintf(ptr, "unsigned long long T5_LED[256] = {");
+	for(i = 0; i < 256; i++)
+	{
+		fprintf(ptr, "0x%016llx", T5_LED[i]);
+		if(i == 255)
+			fprintf(ptr, "};\n\n");
+		else
+			fprintf(ptr, ", ");
+	}
+
+	/* write T6 */
+	fprintf(ptr, "unsigned long long T6_LED[256] = {");
+	for(i = 0; i < 256; i++)
+	{
+		fprintf(ptr, "0x%016llx", T6_LED[i]);
+		if(i == 255)
+			fprintf(ptr, "};\n\n");
+		else
+			fprintf(ptr, ", ");
+	}
+
+	/* write T7 */
+	fprintf(ptr, "unsigned long long T7_LED[256] = {");
+	for(i = 0; i < 256; i++)
+	{
+		fprintf(ptr, "0x%016llx", T7_LED[i]);
+		if(i == 255)
+			fprintf(ptr, "};\n\n");
+		else
+			fprintf(ptr, ", ");
+	}
+
+	/* write Tcon64_LED */
+	fprintf(ptr, "unsigned long long Tcon64_LED[32]  = {");
+	for(i = 0; i < 32; i++)
+	{
+		fprintf(ptr, "0x%016llx", Tcon64_LED[i]);
+		if(i == 31)
+			fprintf(ptr, "};\n\n");
+		else
+			fprintf(ptr, ", ");
+	}
+
+	/* write Tcon128_LED */
+	fprintf(ptr, "unsigned long long Tcon128_LED[48] = {");
+	for(i = 0; i < 48; i++)
+	{
+		fprintf(ptr, "0x%016llx", Tcon128_LED[i]);
+		if(i == 47)
+			fprintf(ptr, "};\n\n");
+		else
+			fprintf(ptr, ", ");
+	}
+
+	/* close the pointer */
+	fclose(ptr);
+
+	return;
+}
