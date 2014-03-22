@@ -2,14 +2,14 @@
 
 This software is a computer program whose purpose is to implement
 lightweight block ciphers with different optimizations for the x86
-platform. Three algorithms have been implemented: [PRESENT](homes.esat.kuleuven.be/.../papers/present_ches07.pdf), 
+platform. Three algorithms have been implemented: [PRESENT](http://homes.esat.kuleuven.be/.../papers/present_ches07.pdf), 
 [LED](https://sites.google.com/site/ledblockcipher/) and [Piccolo](http://link.springer.com/chapter/10.1007%2F978-3-642-23951-9_23#page-1). 
 Three techniques have been explored: table based 
 implementations, vperm (for vector permutation) and bitslice 
 implementations. For more details on these techniques and their 
 adaptation to the algorithms, please refer to the 
 [SAC 2013 paper](http://eprint.iacr.org/2013/445). The pdf 
-of the paper is [here](doc/Implementing_Lightweight_Block_Ciphers_on_x86_Architectures.pdf).
+of the extended paper is [here](doc/Implementing_Lightweight_Block_Ciphers_on_x86_Architectures.pdf).
 
 Here is a big picture of how the code is divided:
 
@@ -44,7 +44,7 @@ on any environment with a decent gcc compiler (Mac OS, Windows with Cygwin ...).
 ## Quick start
 
 ### Dependencies
-The program only requires the autotools package, though it is not mandatory. 
+The program only requires the [autotools](http://www.gnu.org/software/autoconf/) package, though it is not mandatory. 
 If you don't want to use autotools, just copy the [Makefile.default](Makefile.default) 
 as a Makefile and compile the code. Please note however that depending on your 
 CPU type, you might need to adapt the Makefile.
@@ -61,13 +61,31 @@ and adapt the compilation options.
 The produced files are in the `bin` directory. They consist of a `.so` dynamic 
 library containing the ciphers as well as a standalone binary that tests the 
 **reference vectors** of the ciphers and **their performance** for each implementation 
-type.
+type. The standalone binary dynamically loads the library with _dlopen_.
 
 The configure script takes some options to restrict the ciphers and the implementation flavours 
 one wants to compile in the library. One can also force a given architecture (i386 or 
 x86\_64) as well as other specific options described through the script help:
  
     ./configure --help
+
+    --with-led          LED cipher
+    --with-led64        LED  cipher/64-bit  key  variant
+    --with-led128       LED  cipher/128-bit  key  variant
+    --with-present      PRESENT  cipher
+    --with-present80    PRESENT  cipher/80-bit  key  variant
+    --with-present128   PRESENT  cipher/128-bit  key  variant
+    --with-piccolo      Piccolo  cipher
+    --with-piccolo80    Piccolo  cipher/80-bit  key  variant
+    --with-piccolo128   Piccolo  cipher/128-bit  key  variant
+    --with-table        Table  implementations
+    --with-vperm        Vperm  implementations
+    --with-bitslice     Bitslice  implementations
+    --with-ssse         SSSE  implementations
+    --with-avx          AVX  implementations
+    --with-thread-safe  Thread  safe  library  (link  with  pthread)
+    --with-arch32       Force  32-bit  compilation
+    --with-arch64       Force  64-bit  compilation
 
 ### Running the program
 
@@ -78,7 +96,7 @@ Running the tests is as simple as:
     ./check_all_ciphers
 
 The main binary takes options that restrict the execution to test vectors or performance 
-benchmark only, to some implemenations only. The number of samples used for benchmark can also 
+benchmark only, or to some implemenations only. The number of samples used for benchmark can also 
 be tuned here. The default is to use bash colors for a better readability, but one can turn this 
 off (e.g. for logging the results in a file).
 
@@ -94,16 +112,17 @@ off (e.g. for logging the results in a file).
 ### The lightweight block ciphers API
 
 The **key schedule** as well as the **core encryption cipher** of the three lightweight block 
-cipher have been implemented in the different flavours (table, vperm and bitslice). We have 
+ciphers have been implemented in the different flavours (table, vperm and bitslice). We have 
 tried to make it as easy to use as possible for users by chosing a common API that takes 
 into account the **parallelism** offered by each technique (please refer to the 
 [paper](doc/Implementing_Lightweight_Block_Ciphers_on_x86_Architectures.pdf) for details about 
 how performances really depend on use cases of the cipher and how the chosen parallelism 
-can impact them.
+can impact them).
 
 The common API naming convention is:
 
-**Cipher ## key\_size ## implementation\_type ## implementation**, where:
+**Cipher ## key\_size ## implementation\_type ## implementation** (with **##** being the 
+concatenation), where:
 
   * **Cipher** is one of `LED`, `PRESENT`, `Piccolo`
   * **key\_size** is one of `64` or `128` for LED, `80` or `128` for PRESENT and Piccolo
@@ -113,10 +132,10 @@ LED, PRESENT, Piccolo), `bitslice8` (for PRESENT), `bitslice16` (for LED, PRESEN
   * **implementation** is one of `key_schedule`, `core` (for encryption) and `cipher` (for combined 
 key schedule and encryption)
 
-For instance, LED64bitslice16\_core is the bitslice implementation of the encryption core of LED 
-for a 64-bit key size and 16 parallel blocks as input. Similarly, PRESENT80vperm\_key\_schedule is 
+For instance, **LED64bitslice16\_core** is the bitslice implementation of the encryption core of LED 
+for a 64-bit key size and 16 parallel blocks as input. Similarly, **PRESENT80vperm\_key\_schedule** is 
 the vperm key schedule of PRESENT for a 80-bit key size (vperm has a 2 blocks parallelism). 
-Finally, Piccolo128table\_cipher is the table based implementation of the combined key schedule and 
+Finally, **Piccolo128table\_cipher** is the table based implementation of the combined key schedule and 
 encryption of Piccolo for a 128-bit key (table based implementations have a parallelism of 1 block).
 
 ### A note about performance measurements
@@ -135,7 +154,7 @@ disable/enable it on chosen CPU cores. One must first insert the `msr`
 module:
 
  
-    ./modprobe -i msr
+    modprobe -i msr
 
 Then, to disable Turbo Boost on the CPU number 'cpu':
 
