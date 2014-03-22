@@ -4,7 +4,7 @@
     Ryad BENADJILA [ryad.benadjila@ssi.gouv.fr] and
     Jian GUO [ntu.guo@gmail.com] and
     Victor LOMNE [victor.lomne@ssi.gouv.fr] and
-    Thomas Peyrin [thomas.peyrin@gmail.com]
+    Thomas PEYRIN [thomas.peyrin@gmail.com]
 
     This software is a computer program whose purpose is to implement
     lightweight block ciphers with different optimizations for the x86
@@ -14,7 +14,7 @@
     implementations. For more details, please refer to the SAC 2013
     paper:
     http://eprint.iacr.org/2013/445
-    as we as the documentation of the project.
+    as well as the documentation of the project.
 
     Here is a big picture of how the code is divided:
       - src/common contains common headers, structures and functions.
