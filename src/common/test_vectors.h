@@ -1,5 +1,5 @@
-/*------------------------ CeCILL-B HEADER ------------------------------------
-    Copyright ANSSI and NTU (2014)
+/*------------------------ MIT License HEADER ------------------------------------
+    Copyright ANSSI and NTU (2015)
     Contributors:
     Ryad BENADJILA [ryad.benadjila@ssi.gouv.fr] and
     Jian GUO [ntu.guo@gmail.com] and
@@ -15,7 +15,6 @@
     paper:
     http://eprint.iacr.org/2013/445
     as well as the documentation of the project.
-
     Here is a big picture of how the code is divided:
       - src/common contains common headers, structures and functions.
       - src/table contains table based implementations, with the code 
@@ -31,44 +30,33 @@
         written in asm intrinsics. It should compile and run on i386 as 
         well as x86_64 platforms, and it should be portable to other OS 
         flavours since intrinsics are standard among many compilers.
-
     Note: vperm and bitslice implementations require a x86 CPU with at least 
     SSSE3 extensions.
 
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
 
-    This software is governed by the CeCILL-B license under French law and
-    abiding by the rules of distribution of free software.  You can  use,
-    modify and/ or redistribute the software under the terms of the CeCILL-B
-    license as circulated by CEA, CNRS and INRIA at the following URL
-    "http://www.cecill.info".
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
 
-    As a counterpart to the access to the source code and  rights to copy,
-    modify and redistribute granted by the license, users are provided only
-    with a limited warranty  and the software's author,  the holder of the
-    economic rights,  and the successive licensors  have only  limited
-    liability.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
 
-    In this respect, the user's attention is drawn to the risks associated
-    with loading,  using,  modifying and/or developing or reproducing the
-    software by the user in light of its specific status of free software,
-    that may mean  that it is complicated to manipulate,  and  that  also
-    therefore means  that it is reserved for developers  and  experienced
-    professionals having in-depth computer knowledge. Users are therefore
-    encouraged to load and test the software's suitability as regards their
-    requirements in conditions enabling the security of their systems and/or
-    data to be ensured and,  more generally, to use and operate it in the
-    same conditions as regards security.
+    Except as contained in this notice, the name(s) of the above copyright holders
+    shall not be used in advertising or otherwise to promote the sale, use or other
+    dealings in this Software without prior written authorization.
 
-    The fact that you are presently reading this means that you have had
-    knowledge of the CeCILL-B license and that you accept its terms.
 
-    The current source code is part of the common functions and headers 
-    source tree.
-
-    Project: Lightweight cryptography library
-    File:    src/common/test_vectors.h
-
--------------------------- CeCILL-B HEADER ----------------------------------*/
+-------------------------- MIT License HEADER ----------------------------------*/
 /* Test vectors for all the ciphers */
 /**** LED ***/
 /* LED64 test vectors */
