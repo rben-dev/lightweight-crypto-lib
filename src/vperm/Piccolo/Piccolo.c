@@ -1040,6 +1040,14 @@ void Piccolo80vperm_cipher(const u64 plaintext_in[VPERM_P], const u16 keys_in[VP
         /* Copy the input to the aligned buffers */
         memcpy(plaintext, plaintext_in, sizeof(plaintext));
         memcpy(keys, keys_in, sizeof(keys));
+
+#ifdef AVX
+        /* Be sure to never enter the 'C' state when mixing VEX and non-VEX code 
+         * (see http://www.agner.org/optimize/microarchitecture.pdf, 9.12)
+         */
+        asm("vzeroupper");
+#endif
+
 #ifdef MEASURE_PERF
 	key_schedule_start = rdtsc();
 #endif
@@ -1160,6 +1168,13 @@ void Piccolo128vperm_cipher(const u64 plaintext_in[VPERM_P], const u16 keys_in[V
 	/* Copy the input to the aligned buffers */
 	memcpy(plaintext, plaintext_in, sizeof(plaintext));
 	memcpy(keys, keys_in, sizeof(keys));
+
+#ifdef AVX
+        /* Be sure to never enter the 'C' state when mixing VEX and non-VEX code 
+         * (see http://www.agner.org/optimize/microarchitecture.pdf, 9.12)
+         */
+        asm("vzeroupper");
+#endif
 
 #ifdef MEASURE_PERF
         key_schedule_start = rdtsc();

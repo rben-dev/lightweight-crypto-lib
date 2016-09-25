@@ -520,6 +520,13 @@ void LED64vperm_cipher(const u64 plaintext_in[VPERM_P], const u16 keys_in[VPERM_
         memcpy(plaintext, plaintext_in, sizeof(plaintext));
         memcpy(keys, keys_in, sizeof(keys));
 
+#ifdef AVX
+	/* Be sure to never enter the 'C' state when mixing VEX and non-VEX code 
+	 * (see http://www.agner.org/optimize/microarchitecture.pdf, 9.12)
+	 */
+	asm("vzeroupper");
+#endif
+
 	/* The key schedule does merely nothing ... */
 #ifdef MEASURE_PERF
         key_schedule_start = 0;
@@ -685,6 +692,13 @@ void LED128vperm_cipher(const u64 plaintext_in[VPERM_P], const u16 keys_in[VPERM
         /* Copy the input to the aligned buffers */
         memcpy(plaintext, plaintext_in, sizeof(plaintext));
         memcpy(keys, keys_in, sizeof(keys));
+
+#ifdef AVX
+	/* Be sure to never enter the 'C' state when mixing VEX and non-VEX code 
+	 * (see http://www.agner.org/optimize/microarchitecture.pdf, 9.12)
+	 */
+	asm("vzeroupper");
+#endif
 
 	/* The key schedule does merely nothing ... */
 #ifdef MEASURE_PERF

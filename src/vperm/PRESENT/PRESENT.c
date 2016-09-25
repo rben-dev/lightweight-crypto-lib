@@ -521,7 +521,10 @@ __attribute__((noinline)) void PRESENT80vperm_key_schedule(const u8* masterKey, 
         /*      __cdecl calling convention                      */
 	asm (".intel_syntax noprefix");
 	Push_All_Regs();
-	
+#ifdef AVX
+	/* Return to clean non VEX state */
+	asm("vzeroupper");
+#endif
 	/* Put the masks inside xmm to avoid memory usage */
 	asm("movdqa xmm10, [rip + PRESENTKSSBMask1_80]");
 	asm("movdqa xmm11, [rip + PRESENTKSSBMask2_80]");
@@ -902,6 +905,13 @@ void PRESENT80vperm_cipher(const u64 plaintext_in[VPERM_P], const u16 keys_in[VP
         memcpy(plaintext, plaintext_in, sizeof(plaintext));
         memcpy(keys, keys_in, sizeof(keys));
 
+#ifdef AVX
+        /* Be sure to never enter the 'C' state when mixing VEX and non-VEX code 
+         * (see http://www.agner.org/optimize/microarchitecture.pdf, 9.12)
+         */
+        asm("vzeroupper");
+#endif
+
 #ifdef MEASURE_PERF
         key_schedule_start = rdtsc();
 #endif
@@ -1020,6 +1030,13 @@ void PRESENT128vperm_cipher(const u64 plaintext_in[VPERM_P], const u16 keys_in[V
         /* Copy the input to the aligned buffers */
         memcpy(plaintext, plaintext_in, sizeof(plaintext));
         memcpy(keys, keys_in, sizeof(keys));
+
+#ifdef AVX
+        /* Be sure to never enter the 'C' state when mixing VEX and non-VEX code 
+         * (see http://www.agner.org/optimize/microarchitecture.pdf, 9.12)
+         */
+        asm("vzeroupper");
+#endif
 
 #ifdef MEASURE_PERF
         key_schedule_start = rdtsc();
