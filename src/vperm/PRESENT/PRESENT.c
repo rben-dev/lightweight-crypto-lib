@@ -212,11 +212,11 @@ __attribute__((visibility("hidden"),aligned(16))) u8 PRESENTRCounter128[] = {0x0
 /* SSSE primitive */
 #define bit_permute_step32_SSSE(in, out, mask, shift, tmp1) do {\
 	asm("movdqa "tostr(tmp1)", "tostr(in)"");\
-	asm("psrldw "tostr(tmp1)", "tostr(shift)"");\
+	asm("psrld  "tostr(tmp1)", "tostr(shift)"");\
 	asm("pxor   "tostr(tmp1)", "tostr(in)"");\
 	asm("pand   "tostr(tmp1)", "tostr(mask)"");\
 	asm("movdqa "tostr(out)",  "tostr(tmp1)"");\
-	asm("pslldw "tostr(out)",  "tostr(shift)"");\
+	asm("pslld  "tostr(out)",  "tostr(shift)"");\
 	asm("pxor   "tostr(tmp1)", "tostr(in)"");\
 	asm("pxor   "tostr(out)",  "tostr(tmp1)"");\
 } while(0);
@@ -312,10 +312,10 @@ __attribute__((visibility("hidden"),aligned(16))) u8 PRESENTRCounter128[] = {0x0
 /* The bit_permute_step primitive */
 /* AVX primitive */
 #define bit_permute_step32_AVX(in, out, mask, shift, tmp1) do {\
-	asm("vpsrldw "tostr(tmp1)", "tostr(in)", "tostr(shift)"");\
+	asm("vpsrld  "tostr(tmp1)", "tostr(in)", "tostr(shift)"");\
 	asm("pxor    "tostr(tmp1)", "tostr(in)"");\
 	asm("pand    "tostr(tmp1)", "tostr(mask)"");\
-	asm("vpslldw "tostr(out)",  "tostr(tmp1)", "tostr(shift)"");\
+	asm("vpslld  "tostr(out)",  "tostr(tmp1)", "tostr(shift)"");\
 	asm("pxor    "tostr(tmp1)", "tostr(in)"");\
 	asm("pxor    "tostr(out)",  "tostr(tmp1)"");\
 } while(0);
