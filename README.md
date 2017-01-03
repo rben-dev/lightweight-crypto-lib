@@ -54,6 +54,8 @@ and adapt the compilation options.
 
 ### Configure and build the project
 
+    ./autogen.sh
+
     ./configure
 
     make
