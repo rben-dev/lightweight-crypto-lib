@@ -152,12 +152,12 @@ void catch_SIGILL(void){
 	if(try_ssse3 == 1){
 		printf("Sorry, but your CPU does not seem to support SSSE3 instructions!\n");
 		printf("You will have to fall back on table based implementations ...\n");
-		exit(-2);
+		exit(2);
 	}
 	if(try_avx == 1){
 		printf("Sorry, but your CPU does not seem to support AVX instructions!\n");
 		printf("You will have to fall back on non AVX implementations (vperm without AVX, bitslice or table based) ...\n");
-		exit(-3);
+		exit(3);
 	}
 	printf("Unknown error: don't know what to do with the catched SIGILL!\n");
 	exit(-1);

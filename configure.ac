@@ -226,7 +226,7 @@ fi
 # Check for output value
 $FILE
 OUT=$?
-if [[ "$OUT" == "-2" ]]; then
+if [[ "$OUT" == "2" ]]; then
 	echo "###     Detected CPU: no SSSE3          ###" >> ./summary
 	echo "###########################################" >> ./summary
         AC_MSG_NOTICE([---> Your CPU does not support SSSE3])
@@ -237,7 +237,7 @@ if [[ "$OUT" == "-2" ]]; then
 		w_bitslice="no"
 	fi
 fi
-if [[ "$OUT" == "-3" ]]; then
+if [[ "$OUT" == "3" ]]; then
 	echo "###     Detected CPU: SSSE3, no AVX     ###" >> ./summary
 	echo "###########################################" >> ./summary
         AC_MSG_NOTICE([---> Your CPU supports SSSE3 but not AVX])
