@@ -230,6 +230,8 @@ if [[ "$OUT" == "2" ]]; then
 	echo "###     Detected CPU: no SSSE3          ###" >> ./summary
 	echo "###########################################" >> ./summary
         AC_MSG_NOTICE([---> Your CPU does not support SSSE3])
+	w_avx="no"
+	w_ssse="no"
 	if test "$w_vperm" == "default"; then
 		w_vperm="no"
 	fi
@@ -241,6 +243,7 @@ if [[ "$OUT" == "3" ]]; then
 	echo "###     Detected CPU: SSSE3, no AVX     ###" >> ./summary
 	echo "###########################################" >> ./summary
         AC_MSG_NOTICE([---> Your CPU supports SSSE3 but not AVX])
+	w_avx="no"
 fi
 if [[ "$OUT" == "0" ]]; then
 	echo "###     Detected CPU: SSSE3 and AVX     ###" >> ./summary
