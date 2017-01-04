@@ -36,7 +36,7 @@ on any environment with a decent gcc compiler (Mac OS, Windows with Cygwin ...).
 
 ## Authors
 
-  * Ryad Benadjila (<mailto:ryad.benadjila@ssi.gouv.fr>)
+  * Ryad Benadjila (<mailto:ryadbenadjila@gmail.com>)
   * Jian Guo (<mailto:ntu.guo@gmail.com]>)
   * Victor Lomné (<mailto:victor.lomne@ssi.gouv.fr>)
   * Thomas Peyrin (<mailto:thomas.peyrin@gmail.com>)
