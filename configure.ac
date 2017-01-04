@@ -56,7 +56,7 @@ AC_ARG_WITH(vperm,  	 [  --with-vperm   	Vperm implementations], w_vperm="$withv
 AC_ARG_WITH(bitslice,    [  --with-bitslice   	Bitslice implementations], w_bitslice="$withval")
 AC_ARG_WITH(ssse,    	 [  --with-ssse   	SSSE implementations], w_ssse="$withval")
 AC_ARG_WITH(avx,    	 [  --with-avx   	AVX implementations], w_avx="$withval")
-AC_ARG_WITH(threadsafe,  [  --with-thread-safe 	Thread safe library (link with pthread)], w_threadsafe="$withval")
+AC_ARG_WITH(threadsafe,  [  --with-threadsafe 	Thread safe library (link with pthread)], w_threadsafe="$withval")
 AC_ARG_WITH(arch32,  	 [  --with-arch32 	Force 32-bit compilation], w_arch32="$withval")
 AC_ARG_WITH(arch64,  	 [  --with-arch64 	Force 64-bit compilation], w_arch64="$withval")
 
