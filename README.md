@@ -53,6 +53,7 @@ CPU type, you might need to adapt the Makefile.
 and adapt the compilation options.
 
 ### Configure and build the project
+    ./autoclean.sh
 
     ./autogen.sh
 
@@ -131,7 +132,7 @@ concatenation), where:
   * **implementation\_type** is one of `table` (for LED, PRESENT, Piccolo), `vperm` (for 
 LED, PRESENT, Piccolo), `bitslice8` (for PRESENT), `bitslice16` (for LED, PRESENT and Piccolo) and 
 `bitslice32` (for LED)
-  * **implementation** is one of `key_schedule`, `core` (for encryption) and `cipher` (for combined 
+  * **implementation** is one of `_key_schedule`, `_core` (for encryption) and `_cipher` (for combined 
 key schedule and encryption)
 
 For instance, **LED64bitslice16\_core** is the bitslice implementation of the encryption core of LED 
