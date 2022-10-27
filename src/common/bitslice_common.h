@@ -57,17 +57,17 @@
 
 
 -------------------------- MIT License HEADER ----------------------------------*/
-word mask0, mask1, mask2, mask3, mask4, mask5, mask6, mask7, mask_odd, mask_oddh, mask_key1, mask_key2, mask128_key1, mask128_key2, mask128_and_b21, mask128_and_b22, mask512_key1, mask512_key2;
-word mask_unpack8_l0, mask_unpack8_l1, mask_unpack8_h0, mask_unpack8_h1;
-word mask_unpack16_l0,mask_unpack16_l1, mask_unpack16_h0, mask_unpack16_h1;
-word mask_unpack64_l0,mask_unpack64_l1, mask_unpack64_h0, mask_unpack64_h1;
-word mask_u, mask_l, mask88, mask44, mask22, mask11, mask_one;  /* masks for unpacking 4-bit nibbles */
-word mask16_sr01, mask16_sr23;                              /* masks for shift rows */
-word mask_byte_endian;
-word mask_byte_endian64;
-word mask_byte_endian80;
+static word mask0, mask1, mask2, mask3, mask4, mask5, mask6, mask7, mask_odd, mask_oddh, mask_key1, mask_key2, mask128_key1, mask128_key2, mask128_and_b21, mask128_and_b22, mask512_key1, mask512_key2;
+static word mask_unpack8_l0, mask_unpack8_l1, mask_unpack8_h0, mask_unpack8_h1;
+static word mask_unpack16_l0,mask_unpack16_l1, mask_unpack16_h0, mask_unpack16_h1;
+static word mask_unpack64_l0,mask_unpack64_l1, mask_unpack64_h0, mask_unpack64_h1;
+static word mask_u, mask_l, mask88, mask44, mask22, mask11, mask_one;  /* masks for unpacking 4-bit nibbles */
+static word mask16_sr01, mask16_sr23;                              /* masks for shift rows */
+static word mask_byte_endian;
+static word mask_byte_endian64;
+static word mask_byte_endian80;
 
-word mask_u64, mask_l64;
+static word mask_u64, mask_l64;
 
 #define CONSTANT(b)     _mm_set1_epi8((b))          	    /* set each byte in a 128-bit register to be "b" */
 #define SET		_mm_set_epi8			    /* set bytes of a 128-bit vector */
@@ -542,7 +542,7 @@ word mask_u64, mask_l64;
 	mask_byte_endian80 = SET(0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7);\
 } while(0);
 
-word mask_l16, mask_r16;
+static word mask_l16, mask_r16;
 #define cross16(r, a, b) do {\
 	r = XOR(AND(a, mask_l16), AND(b, mask_r16));\
 } while(0);

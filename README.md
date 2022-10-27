@@ -49,6 +49,8 @@ If you don't want to use autotools, just copy the [Makefile.default](Makefile.de
 as a Makefile and compile the code. Please note however that depending on your 
 CPU type, you might need to adapt the Makefile.
 
+For now, the program **is only compatible with gcc** (e.g. it cannot be compiled wit clang).
+
 **NOTE**: the autotools are used in the project to automatically detect the CPU 
 and adapt the compilation options.
 
